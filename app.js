@@ -2,30 +2,42 @@ const btn = document.querySelector('.talk');
 const content = document.querySelector('.content');
 let isRecognizing = false; // Track the state of recognition
 
-function speak(text) {
+function speak(text, callback) {
     const text_speak = new SpeechSynthesisUtterance(text);
     text_speak.rate = 1;
     text_speak.volume = 1;
     text_speak.pitch = 1;
+
+    // Set up an event listener to call the callback once speaking is done
+    text_speak.onend = function() {
+        if (callback) {
+            callback();
+        }
+    };
+
     window.speechSynthesis.speak(text_speak);
 }
 
 // Make sure this function is only called after user interaction
 function initializeJarvis() {
-    speak("Initializing JARVIS....");
-    wishMe();
+    speak("Initializing JARVIS....", () => {
+        wishMe(() => {
+            // Start recognition after speaking the greeting
+            startRecognition();
+        });
+    });
 }
 
-function wishMe() {
+function wishMe(callback) {
     const day = new Date();
     const hour = day.getHours();
 
     if (hour >= 0 && hour < 12) {
-        speak("Good Morning Sir!");
+        speak("Good Morning Sir!", callback);
     } else if (hour >= 12 && hour < 17) {
-        speak("Good Afternoon Boss!");
+        speak("Good Afternoon Boss!", callback);
     } else {
-        speak("Good Evening Sir!");
+        speak("Good Evening Sir!", callback);
     }
 }
 
@@ -47,12 +59,12 @@ recognition.onresult = (event) => {
     takeCommand(transcript.toLowerCase());
 };
 
-btn.addEventListener('click', () => {
+function startRecognition() {
     if (!isRecognizing) { // Check if recognition is not already running
         content.textContent = "Listening...";
         recognition.start();
     }
-});
+}
 
 btn.addEventListener('click', initializeJarvis);
 
@@ -68,25 +80,19 @@ function takeCommand(message) {
     } else if (message.includes("open facebook")) {
         window.open("https://facebook.com", "_blank");
         speak("Opening Facebook...");
-
-    }
-    else if (message.includes("open Leetcode")) {
+    } else if (message.includes("open Leetcode")) {
         window.open("https://leetcode.com", "_blank");
         speak("Opening Leetcode...");
-     }
-    else if (message.includes("open chatgpt")) {
+    } else if (message.includes("open chatgpt")) {
         window.open("https://chatgpt.com/", "_blank");
         speak("Opening Chat-GPT...");
-     }
-    else if (message.includes("open Striver SDE Sheet")) {
+    } else if (message.includes("open Striver SDE Sheet")) {
         window.open("https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/", "_blank");
         speak("Opening Striver SDE Sheet by Raj Vikrmaditya Sir...");
-     }
-    else if (message.includes("open MyResume")) {
+    } else if (message.includes("open MyResume")) {
         window.open("https://drive.google.com/file/d/1roCJbkGQYrYf37F7YfS9mXF4HwIpQFlW/view?usp=sharing", "_blank");
         speak("Opening Yuvraj Singh Resume...");
-     }
-      else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
+    } else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
         const query = encodeURIComponent(message);
         window.open(`https://www.google.com/search?q=${query}`, "_blank");
         const finalText = "This is what I found on the internet regarding " + message;
