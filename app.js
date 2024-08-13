@@ -21,11 +21,11 @@ function wishMe() {
     const hour = day.getHours();
 
     if (hour >= 0 && hour < 12) {
-        speak("Good Morning Yuvraj Sir! How are you.");
+        speak("Good Morning Sir!");
     } else if (hour >= 12 && hour < 17) {
-        speak("Good Afternoon Yuvraj Sir! What about your task? How can I help you?");
+        speak("Good Afternoon Boss!");
     } else {
-        speak("Good Evening Yuvraj Sir!");
+        speak("Good Evening Sir!");
     }
 }
 
